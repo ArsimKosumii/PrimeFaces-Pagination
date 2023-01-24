@@ -1,0 +1,33 @@
+@charset "ISO-8859-1";
+
+.add-dialog {
+	display: flex;
+	justify-content: center;
+}
+
+.dialog-modal label {
+	display: block;
+}
+
+.dialog-modal input {
+	display: block;
+	width:300px;
+}
+
+.dialog-modal select {
+	display: block;
+	width:300px;
+}
+
+.card table tr:hover {
+	background: #ccc;
+	font-weight: bold;
+}
+
+.card button {
+	margin-left:10px;
+}
+
+.card button:hover {
+	opacity: 0.5;
+}

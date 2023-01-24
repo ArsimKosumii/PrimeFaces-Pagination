@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet name="styles.css" library="css" />
+</h:head>
+<body>
+	<div class="card">
+		<h:form id="form">
+			<p:growl id="messages" showDetail="true" />
+			<p:commandButton style="background:green;" onclick="PF('add').show();" type="button" icon="pi pi-plus"/>
+			<p:dataTable var="employee" value="#{lazyView.lazyModel}"
+				paginator="true" rows="10" allowUnsorting="true"
+				currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} 
+				{PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport}"
+				rowsPerPageTemplate="2,5,10,15" id="employeeTable"
+				widgetVar="employeeTable">
+				<p:column headerText="ID" sortBy="#{employee.id}"
+					filterBy="#{employee.id}">
+					<h:outputText value="#{employee.id}" />
+				</p:column>
+				<p:column headerText="Name" sortBy="#{employee.name}"
+					filterBy="#{employee.name}">
+					<h:outputText value="#{employee.name}" />
+				</p:column>
+				<p:column headerText="LastName" sortBy="#{employee.lastname}"
+					filterBy="#{employee.lastname}">
+					<h:outputText value="#{employee.lastname}" />
+				</p:column>
+				<p:column headerText="Age" sortBy="#{employee.age}"
+					filterBy="#{employee.age}">
+					<h:outputText value="#{employee.age}" />
+				</p:column>
+				<p:column headerText="Birth Date" sortBy="#{employee.dateofbirth}"
+					filterBy="#{employee.dateofbirth}">
+					<h:outputText value="#{employee.dateofbirth}" />
+				</p:column>
+				<p:column headerText="Date of Employment"
+					sortBy="#{employee.dateofemployment}"
+					filterBy="#{employee.dateofemployment}">
+					<h:outputText value="#{employee.dateofemployment}" />
+				</p:column>
+				<p:column headerText="Country" sortBy="#{employee.country}"
+					filterBy="#{employee.country}">
+					<f:facet name="filter">
+						<p:selectCheckboxMenu onchange="PF('employeeTable').filter();"
+							converter="#{countryConverter}" label="Countries" multiple="true"
+							filter="true" panelStyle="width:250px">
+							<f:selectItems value="#{countryController.listCountries}"
+								var="country" itemLabel="#{country.country_name}"
+								itemValue="#{country}" />
+						</p:selectCheckboxMenu>
+					</f:facet>
+					<h:outputText value="#{employee.country.country_name}" />
+				</p:column>
+				<p:column headerText="Operations">
+					<p:commandButton icon="pi pi-pencil"
+									 update="empdetail"
+									 oncomplete="PF('employeeDialog').show()"> 
+						<f:setPropertyActionListener value="#{employee}"
+							target="#{employeeController.selectedEmployee}" />
+					</p:commandButton>
+					
+					<p:commandButton style="background:red;" 
+									 icon="pi pi-trash" 
+									 update="employeeTable" 
+									 action="#{employeeController.deleteEmployee(employee)}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</div>
+	<div id="add-dialog">
+		<h:form>
+			<p:dialog styleClass="dialog-modal" header="Add Employee"
+				widgetVar="add" modal="true" showEffect="fade" hideEffect="fade"
+				resizable="false">
+				<p:outputPanel id="employeeDetail">
+					<p:outputLabel value="Name: " />
+					<p:inputText value="#{employeeController.emp.name}" />
+					<p:outputLabel value="Last name: " />
+					<p:inputText value="#{employeeController.emp.lastname}" />
+					<p:outputLabel value="Age: " />
+					<p:inputNumber value="#{employeeController.emp.age}" />
+					<p:outputLabel value="Date of birth: " />
+					<p:inputText value="#{employeeController.emp.dateofbirth}" />
+					<p:outputLabel value="Date of Employment: " />
+					<p:inputText value="#{employeeController.emp.dateofemployment}" />
+					<p:outputLabel value="Country: " />
+					<p:selectOneMenu value="#{employeeController.selectedCountry}"
+						converter="#{countryConverter}">
+						<f:selectItems value="#{countryController.listCountries}"
+							var="country" itemLabel="#{country.country_name}"
+							itemValue="#{country}" />
+					</p:selectOneMenu>
+					<br />
+					<p:commandButton action="#{employeeController.insertRow()}"
+						value="Add" onclick="PF('add').hide();" />
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+	</div>
+
+	<div id="edit-dialog">
+		<h:form id="empdetail">
+			<p:dialog header="Employee Info" widgetVar="employeeDialog"
+				styleClass="dialog-modal" modal="true" showEffect="fade"
+				hideEffect="fade" resizable="false">
+				<p:outputPanel id="employeeDetail">
+					<p:outputLabel value="Name: " />
+					<p:inputText value="#{employeeController.selectedEmployee.name}" />
+					<p:outputLabel value="Last name: " />
+					<p:inputText
+						value="#{employeeController.selectedEmployee.lastname}" />
+					<p:outputLabel value="Age: " />
+					<p:inputText value="#{employeeController.selectedEmployee.age}" />
+					<p:outputLabel value="Date of birth: " />
+					<p:inputText
+						value="#{employeeController.selectedEmployee.dateofbirth}" />
+					<p:outputLabel value="Date of Employment: " />
+					<p:inputText
+						value="#{employeeController.selectedEmployee.dateofemployment}" />
+					<p:outputLabel value="Country: " />
+					<p:selectOneMenu value="#{employeeController.selectedEmployee.country}"
+						converter="#{countryConverter}">
+						<f:selectItems value="#{countryController.listCountries}"
+							var="country" itemLabel="#{country.country_name}"
+							itemValue="#{country}" />
+					</p:selectOneMenu>
+					<br />
+					<p:commandButton action="#{employeeController.updateRow()}"
+						value="Save" onclick="PF('edit').hide();" />
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+	</div>
+</body>
+</html>
